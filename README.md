@@ -1,4 +1,4 @@
-# TCGA_PDAC #
+# TCGA_PDAC
 ---
 title: " Differntial gene expression of Pancreatic adenocarcnoma with limma package"
 output: html_notebook
@@ -67,11 +67,10 @@ dim(tcga_data) #check the file size
 
 #There are 3 functions that allow us to access to most important data present in this object, these are: colData(), rowData(), assays(). Use the command ?SummarizedExperiment to find more details. colData() allows us to access the clinical data associated with our samples. The functions colnames() and rownames() can be used to extract the column and rows names from a given table respectively.
 ```{r}
-# In R (and other programming languages) you can often
-# chain functions to save time and space
+# In R (and other programming languages) chain functions allows us to save time and space.
 colnames(colData(tcga_data))
 ```
-#The table() function (in this context) produces a small summary with the sum of each of the factors present in a given column.
+#The table() function (in this context) produces a summary with the sum of each of the factors present in a given column.
 ```{r}
 table(tcga_data@colData$vital_status)
 ```
@@ -79,7 +78,6 @@ table(tcga_data@colData$vital_status)
 ```{r}
 table(tcga_data@colData$tumor_stage)
 ```
-
 ```{r}
 table(tcga_data@colData$definition)
 ```
@@ -181,7 +179,7 @@ limma_res = limma_pipeline(
   reference_group="Solid Tissue Normal"
 )
 ```
-setwd("/gpfs1/home/mariam.zamani")
+setwd("/github/home/mariam.zamani")
 #Let’s save this object to file, like we did with tcga_data:
 ```{r}
 # Save the data as a file, if you need it later, you can just load this file
@@ -236,7 +234,6 @@ plot_PCA = function(voomObj, condition_variable){
 res_pca = plot_PCA(limma_res$voomObj, "definition")
 ```
 ##Limma differential expression analysis in R
-#RNA sequnce normalization
 
 #In our pipeline function, we use the package limma. We will select a particular clinical feature of the data to use as class for grouping the samples as either tumor vs normal tissue. This data is available under the column definition for tcga_data, but needs the use of the function colData to be accessed. In addition, limma requires this data to be a factor, so we convert it as such:
 ```{r}
@@ -619,3 +616,6 @@ expr_df = limma_res$topGenes
 # print the first row, to see the gene name, the logFC value and the p-value
 print(expr_df[1, ])
 ```
+#This work was part of unpublished research of analysis of publicly available "TCGA pancreatic adenocarcinoma gene expression dataset" from Jansen lab of NDSU.
+
+#Acknowledgemnt : https://costalab.ukaachen.de/
