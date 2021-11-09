@@ -1,6 +1,6 @@
 # TCGA_PDAC
 ---
-title: " Differntial gene expression of Pancreatic adenocarcnoma with limma package"
+title: "Differntial gene expression of PDAC"
 output: html_notebook
 ---
 
