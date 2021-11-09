@@ -1,0 +1,114 @@
+file.path("/home/mariamz12")
+  library(TCGAbiolinks)
+  library(knitr)
+  library(limma)
+  library(minfi)
+  library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+  library(IlluminaHumanMethylation450kmanifest)
+  library(RColorBrewer)
+  library(missMethyl)
+  library(minfiData)
+  library(Gviz)
+  library(DMRcate)
+  library(stringr)
+  library(MethylMix)
+  library(DT)
+```
+#----------- Identification of CpGs with TCGABiolinks package R  -------
+
+# Samples: primary solid tumor w/ DNA methylation and gene expression
+pc.samples <- matchedMetExp("TCGA-PAAD", n = 100)
+samples = pc.samples
+
+#-----------------------------------
+# 1 - Methylation
+# ----------------------------------
+meth.TN <- GDCquery(project = "TCGA-PAAD",
+                      data.category = "DNA methylation",
+                      platform = "Illumina Human Methylation 450",
+                      legacy = TRUE,
+                      sample.type = c("Solid Tissue Normal")) # 10 entries will be downloaded
+```
+```{r}
+meth.TP <- GDCquery(project = "TCGA-PAAD",
+                      data.category = "DNA methylation",
+                      platform = "Illumina Human Methylation 450",
+                      legacy = TRUE,
+                      sample.type = c("Primary Tumor"))
+```
+```{r}
+# Code to combine tumor and normal samples.
+# First we downloaded tumor samples, second normal tissue samples and using summarizedexperiment::cbind them. Last, we saved it as rds object
+```{r}
+GDCdownload(query.TP)
+query.TP <- GDCprepare(query = query.TP, save = TRUE, save.filename = "Meth.TP.rda")
+
+GDCdownload(query.TN)
+query.TN <- GDCprepare(query = query.TN, save = TRUE, save.filename = "Meth.TN.rda")
+
+```{r}
+met <- SummarizedExperiment::cbind(query.TN, query.TP)
+saveRDS(object = met, file = "data.met.rds")
+
+```{r}
+table(data$definition)
+exp <- data
+```
+```
+# Example of DNA methylation data input
+
+```{r}
+data.met@rowRanges
+```
+# data.met is TCGA-PAAD file containing nomoal and tumor methylation data downloaded and save as rds file #
+GDC.meth<-data.met
+
+
+library(SummarizedExperiment)
+samples.information <- colData(data.met)
+
+
+GDC.meth$case<-rep("tumor",length(GDC.meth$sample))
+GDC.meth$case[c(133,157,182,110,86,184,160,17,179,72)]<-"normal"
+GDC.meth$case[74]<-"met"
+
+
+GDC.meth$stage<-as.factor(GDC.meth$ajcc_pathologic_stage)
+
+for (i in 1:length(GDC.meth$stage)){
+  if(is.na(GDC.meth$stage[i])==FALSE){
+    if(GDC.meth$stage[i]=="stage iii"|GDC.meth$stage[i]=="stage iv"){
+      GDC.meth$stage2[i]<-"iii_plus"
+    }else if(GDC.meth$stage[i]=="stage ia.ib.iia_n0"){
+      GDC.meth$stage2[i]<-"ii_minus"
+    }else if(GDC.meth$stage[i]=="stage iib_n1"){
+      GDC.meth$stage2[i]<-"iib"
+    }else{
+      GDC.meth$stage2[i]<-""
+    }
+  }else{
+    GDC.meth$stage2[i]<-""
+  }
+}
+
+GDC.meth$case2<-as.factor(GDC.meth$case)
+
+# remove probes with NA (similar to na.omit)
+met <- met[rowSums(is.na(assay(GDC.meth))) == 0,]
+
+df <- data.frame(
+  "Sample.mean" = colMeans(assay(GDC.meth), na.rm = TRUE),
+  "groups" = GDC.meth$case2
+)
+
+library(ggpubr)
+ggpubr::ggboxplot(
+  data = df,
+  y = "Sample.mean",
+  x = "groups",
+  color = "groups",
+  add = "jitter",
+  ylab = expression(paste("Mean DNA methylation (", beta, "-values)")),
+  xlab = ""
+) + stat_compare_means() 
+```
