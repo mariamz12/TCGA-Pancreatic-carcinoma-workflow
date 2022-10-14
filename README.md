@@ -616,7 +616,7 @@ expr_df = limma_res$topGenes
 # print the first row, to see the gene name, the logFC value and the p-value
 print(expr_df[1, ])
 ```
-#This work was part of unpublished research of analysis of publicly available "TCGA pancreatic adenocarcinoma gene expression dataset" from Jansen lab of NDSU.
+#This work was part of unpublished research of analysis of publicly available "TCGA pancreatic adenocarcinoma gene expression dataset" from COBRE Center for Diagnostic and Therapeutic Strategies in Pancreatic Cancer NDSU.
 
 
-#Acknowledgment:scripts adapted and modified from Coastalab.org
+#Acknowledgment:mariamz%%
